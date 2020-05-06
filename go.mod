@@ -1,4 +1,4 @@
-module github.com/coinexchain/cet-sdk
+module github.com/diamondnetwork2000/diamond-sdk
 
 go 1.13
 
