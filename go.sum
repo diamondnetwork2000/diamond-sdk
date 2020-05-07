@@ -40,10 +40,13 @@ github.com/btcsuite/winsvc v1.0.0/go.mod h1:jsenWakMcC0zFBFurPLEAyrnc/teJEM1O46f
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
 github.com/cespare/xxhash v1.1.0/go.mod h1:XrSqR1VqqWfGrhpAt58auRo0WTKS1nRRg3ghfAqPWnc=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
+github.com/coinexchain/cet-sdk v0.2.16 h1:uo0TD6zOrikJ7VvVh1xjtmIwtm8q3mMgKDWVgFV7hoI=
+github.com/coinexchain/cet-sdk v0.2.16/go.mod h1:Djk9yY1fq/z/bZK5bhyMnprUiShhUJfe/vkCbz3HuCc=
 github.com/coinexchain/cosmos-sdk v0.37.710 h1:L5Um2mG8897YWas8p3MMkH61+zhoEIolIZSnu+bsHtU=
 github.com/coinexchain/cosmos-sdk v0.37.710/go.mod h1:/VIQkL+RWyNbBLakvAQJ/LUnx5ZHTjL7uyGEAA+vDCg=
 github.com/coinexchain/cosmos-utils v0.0.0-20200109031554-f15ba3b1d6a7 h1:cIQxD8xh/Lp6m+PyRq7rkiLg8WPXtU5Fpr/P7jbDYpo=
 github.com/coinexchain/cosmos-utils v0.0.0-20200109031554-f15ba3b1d6a7/go.mod h1:JvdHh+tB6eBmuQ75l/QqSLx8Jj5rOoVS4DkLJrmYJgw=
+github.com/coinexchain/cosmos-utils v0.0.0-20200109033715-9d0abddbd522 h1:nbZDIvYZgXfFIhIHWZZiNYQnaWefCNe2+uBlEnJzbXk=
 github.com/coinexchain/shorthanzi v0.1.0 h1:c4Fcb8GkQ37uLNSQr5SRohmS+aW+WY3doyy7ZuhF0W4=
 github.com/coinexchain/shorthanzi v0.1.0/go.mod h1:g/V5MW70JNcg9/OumUZLp63aDxEQImlYqJ6PMJEIu28=
 github.com/coinexchain/tendermint v0.32.905 h1:7ybCStjSaZKqO4aowj+miTrfoUmDzt7pZ9trw9HUjpE=
@@ -67,6 +70,8 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/dgrijalva/jwt-go v3.2.0+incompatible/go.mod h1:E3ru+11k8xSBh+hMPgOLZmtrrCbhqsmaPHjLKYnJCaQ=
 github.com/dgryski/go-sip13 v0.0.0-20181026042036-e10d5fee7954/go.mod h1:vAd38F8PWV+bWy6jNmig1y/TA+kYO4g3RSRF0IAv0no=
+github.com/diamondnetwork2000/diamond-sdk v0.0.0-20200506085303-b1b35baace05 h1:xc0uPryO49DMH1nTO0hn3Bee+MXuPC+FHIgh2Cm0UtY=
+github.com/diamondnetwork2000/diamond-sdk v0.0.0-20200506085303-b1b35baace05/go.mod h1:snUkg9n7FJECoWxBQ1AQtmL8WT2RK/LsmbuAcH87Z7U=
 github.com/eapache/go-resiliency v1.1.0 h1:1NtRmCAqadE2FN4ZcN6g90TP3uk8cg9rn9eNK2197aU=
 github.com/eapache/go-resiliency v1.1.0/go.mod h1:kFI+JgMyC7bLPUVY133qvEBtVayf5mFgVsvEsIPBvNs=
 github.com/eapache/go-xerial-snappy v0.0.0-20180814174437-776d5712da21 h1:YEetp8/yCZMuEPMUDHG0CW/brkkEp8mzqk2+ODEitlw=

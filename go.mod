@@ -1,4 +1,4 @@
-module github.com/diamondnetwork2000/diamond-sdk
+module github.com/coinexchain/cet-sdk
 
 go 1.13
 
@@ -8,6 +8,7 @@ require (
 	github.com/coinexchain/cosmos-utils v0.0.0-20200109031554-f15ba3b1d6a7
 	github.com/coinexchain/shorthanzi v0.1.0
 	github.com/cosmos/cosmos-sdk v0.37.4
+	github.com/diamondnetwork2000/diamond-sdk v0.0.0-20200506085303-b1b35baace05 // indirect
 	github.com/emirpasic/gods v1.12.0
 	github.com/facebookgo/ensure v0.0.0-20200202191622-63f1cf65ac4c // indirect
 	github.com/facebookgo/subset v0.0.0-20200203212716-c811ad88dec4 // indirect

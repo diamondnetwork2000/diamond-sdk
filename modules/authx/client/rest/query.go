@@ -3,6 +3,7 @@ package rest
 import (
 	"fmt"
 	"net/http"
+	"encoding/hex"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -13,12 +14,15 @@ import (
 
 	"github.com/coinexchain/cet-sdk/modules/authx/internal/types"
 	"github.com/coinexchain/cosmos-utils/client/restutil"
+	"github.com/tendermint/tendermint/crypto/secp256k1"
 )
 
 // register REST routes
 func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec) {
 	r.HandleFunc("/auth/accounts/{address}", QueryAccountRequestHandlerFn(cliCtx, cdc)).Methods("GET")
 	r.HandleFunc("/auth/parameters", QueryParamsHandlerFn(cliCtx)).Methods("GET")
+	r.HandleFunc("/auth/verify", QueryVerifyRequestHandlerFn(cliCtx)).Methods("GET")
+	r.HandleFunc("/auth/sign", SignRequestHandlerFn(cliCtx)).Methods("POST")
 	r.HandleFunc("/auth/accounts/{address}/referee", setRefereeHandleFn(cdc, cliCtx)).Methods("POST")
 }
 
@@ -43,5 +47,61 @@ func QueryParamsHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		route := fmt.Sprintf("custom/%s/%s", types.StoreKey, types.QueryParameters)
 		restutil.RestQuery(nil, cliCtx, w, r, route, nil, nil)
+	}
+}
+
+//Verify if the given signature is passed or not
+func QueryVerifyRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		pubKey := r.URL.Query().Get("pubKey")
+		message := r.URL.Query().Get("message")
+		signature := r.URL.Query().Get("signature")
+
+		pubB, _ := hex.DecodeString(pubKey)
+		
+		signatureB, _ := hex.DecodeString(signature)
+
+		var pubkeyBytes secp256k1.PubKeySecp256k1
+		copy(pubkeyBytes[:], pubB)
+		ok := pubkeyBytes.VerifyBytes([]byte(message), signatureB)
+
+		result := make(map[string]string)
+		result["pubKey"] = pubKey
+		result["message"] = message
+		result["signature"] = signature
+		result["result"] = fmt.Sprintf("%t",ok)
+		rest.PostProcessResponse(w, cliCtx, result)
+	}
+}
+
+//Sign the given message with private key
+func SignRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+
+	return func(w http.ResponseWriter, r *http.Request) {
+        //private key is encoded as hex string
+		privKey := r.URL.Query().Get("privKey")
+		message := r.URL.Query().Get("message")
+		
+
+		privKeyB, _ := hex.DecodeString(privKey)
+		
+		var priv secp256k1.PrivKeySecp256k1
+		copy(priv[:], privKeyB)
+
+		pubKey := priv.PubKey()
+
+		signature, err := priv.Sign([]byte(message))
+
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		result := make(map[string]string)
+		result["privKey"] = privKey
+		result["pubKey"] = hex.EncodeToString(pubKey.Bytes())
+		result["message"] = message
+		result["signature"] = hex.EncodeToString(signature)
+		rest.PostProcessResponse(w, cliCtx, result)
 	}
 }
