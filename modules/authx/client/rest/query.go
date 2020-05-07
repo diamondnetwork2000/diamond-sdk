@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"encoding/hex"
+	"io/ioutil"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -15,6 +16,7 @@ import (
 	"github.com/coinexchain/cet-sdk/modules/authx/internal/types"
 	"github.com/coinexchain/cosmos-utils/client/restutil"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
 
 // register REST routes
@@ -23,6 +25,7 @@ func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec) 
 	r.HandleFunc("/auth/parameters", QueryParamsHandlerFn(cliCtx)).Methods("GET")
 	r.HandleFunc("/auth/verify", QueryVerifyRequestHandlerFn(cliCtx)).Methods("GET")
 	r.HandleFunc("/auth/sign", SignRequestHandlerFn(cliCtx)).Methods("POST")
+	r.HandleFunc("/auth/signTx/{privKey}", SignTxRequestHandlerFn(cliCtx)).Methods("POST")
 	r.HandleFunc("/auth/accounts/{address}/referee", setRefereeHandleFn(cdc, cliCtx)).Methods("POST")
 }
 
@@ -105,3 +108,68 @@ func SignRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		rest.PostProcessResponse(w, cliCtx, result)
 	}
 }
+
+func SignTxRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		//private key is encoded as hex string
+		vars := mux.Vars(r)
+		privKey := vars["privKey"]
+
+
+		tx, err := ioutil.ReadAll(r.Body)
+        if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		
+		stdTx, err := readStdTxFromFile(cliCtx.Codec, tx)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		privKeyB, _ := hex.DecodeString(privKey)
+		var priv secp256k1.PrivKeySecp256k1
+		copy(priv[:], privKeyB)
+		
+		msg := authtypes.StdSignMsg{
+			ChainID:       "2",
+			AccountNumber: 1,
+			Sequence:     1,
+			Fee:           stdTx.Fee,
+			Msgs:          stdTx.GetMsgs(),
+			Memo:          stdTx.GetMemo(),
+		}
+
+
+		sigBytes, err := priv.Sign(msg.Bytes())
+
+		signature := authtypes.StdSignature{
+			PubKey:    priv.PubKey(),
+			Signature: sigBytes,
+		}
+
+	
+		sigs := stdTx.Signatures
+		if len(sigs) == 0  {
+			sigs = []authtypes.StdSignature{signature}
+		} else {
+			sigs = append(sigs, signature)
+		}
+
+		signedStdTx := authtypes.NewStdTx(stdTx.GetMsgs(), stdTx.Fee, sigs, stdTx.GetMemo())
+
+		rest.PostProcessResponse(w, cliCtx, signedStdTx)
+	}
+}
+
+func readStdTxFromFile(cdc *codec.Codec,tx []byte) (stdTx authtypes.StdTx, err error) {
+	if err = cdc.UnmarshalJSON(tx, &stdTx); err != nil {
+		return
+	}
+
+	return
+}
+
+
