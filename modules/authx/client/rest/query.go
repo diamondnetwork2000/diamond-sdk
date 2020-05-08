@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"encoding/hex"
 	"io/ioutil"
+	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -113,9 +114,11 @@ func SignTxRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		//private key is encoded as hex string
-		vars := mux.Vars(r)
-		privKey := vars["privKey"]
 
+		privKey := r.URL.Query().Get("privKey")
+		chainId := r.URL.Query().Get("chainId")
+		accountNumber := r.URL.Query().Get("accountNumber")
+		sequence := r.URL.Query().Get("sequence")
 
 		tx, err := ioutil.ReadAll(r.Body)
         if err != nil {
@@ -132,11 +135,14 @@ func SignTxRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		privKeyB, _ := hex.DecodeString(privKey)
 		var priv secp256k1.PrivKeySecp256k1
 		copy(priv[:], privKeyB)
+
+		accountNumberI,_ := strconv.Atoi(accountNumber)
+		sequenceI,_ := strconv.Atoi(sequence)
 		
 		msg := authtypes.StdSignMsg{
-			ChainID:       "2",
-			AccountNumber: 1,
-			Sequence:     1,
+			ChainID:       chainId,
+			AccountNumber: uint64(accountNumberI),
+			Sequence:     uint64(sequenceI),
 			Fee:           stdTx.Fee,
 			Msgs:          stdTx.GetMsgs(),
 			Memo:          stdTx.GetMemo(),
