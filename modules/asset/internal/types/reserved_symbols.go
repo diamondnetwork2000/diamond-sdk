@@ -28,14 +28,14 @@ var reserved = []string{
 	"sys", "wxt", "erd", "wgr", "lend", "mda", "dpt", "loki", "iris", "egt",
 
 	// coinex exchange currency: 96
-	"ont", "grin", "gnt", "atom", "qtum", "eth", "btc", "omg", "ae", "wings",
+	"ont", "grin", "gnt", "atom", "qtum", "omg", "ae", "wings",
 	"btm", "eosc", "dcr", "loom", "olt", "neo", "icx", "bat", "etc", "kmd",
 	"xzc", "dash", "iota", "btt", "vet", "okb", "xtz", "link", "stx", "algo",
 	"hot", "cnn", "tusd", "lsk", "ltc", "zil", "xrp", "zec", "vsys", "bch",
 	"ada", "cmt", "cody", "nano", "zrx", "hydro", "trx", "cet", "seele", "doge",
-	"dot", "ftt", "bsv", "hc", "btu", "iost", "sai", "xmr", "dero", "eos",
+	"dot", "ftt", "bsv", "hc", "btu", "iost", "sai", "xmr", "dero", ,
 	"spice", "xvg", "spok", "ong", "rvn", "sys", "usdh", "xem", "dgb", "bnb",
-	"nnb", "xlm", "waves", "ela", "ardr", "ult", "usdt", "usdc", "lamb", "sc",
+	"nnb", "xlm", "waves", "ela", "ardr", "ult",  "usdc", "lamb", "sc",
 	"kan", "ckb", "ht", "pax", "ctxc", "gusd", "gram", "trtl", "vtho", "akro",
 	"whc", "lfc", "tct", "gas", "egt", "fcny",
 
