@@ -33,7 +33,7 @@ var reserved = []string{
 	"xzc", "dash", "iota", "btt", "vet", "okb", "xtz", "link", "stx", "algo",
 	"hot", "cnn", "tusd", "lsk", "ltc", "zil", "xrp", "zec", "vsys", "bch",
 	"ada", "cmt", "cody", "nano", "zrx", "hydro", "trx", "cet", "seele", "doge",
-	"dot", "ftt", "bsv", "hc", "btu", "iost", "sai", "xmr", "dero", ,
+	"dot", "ftt", "bsv", "hc", "btu", "iost", "sai", "xmr", "dero",
 	"spice", "xvg", "spok", "ong", "rvn", "sys", "usdh", "xem", "dgb", "bnb",
 	"nnb", "xlm", "waves", "ela", "ardr", "ult",  "usdc", "lamb", "sc",
 	"kan", "ckb", "ht", "pax", "ctxc", "gusd", "gram", "trtl", "vtho", "akro",
