@@ -6,7 +6,7 @@ var reservedSymbolMap map[string]int
 //nolint
 var reserved = []string{
 	// coin market cap currency Top 200
-	"btc", "eth", "xrp", "bch", "usdt", "ltc", "eos", "bnb", "bsv", "xlm",
+    "xrp", "bch", "ltc", "bnb", "bsv", "xlm",
 	"trx", "ada", "xmr", "leo", "ht", "link", "xtz", "neo", "miota", "atom",
 	"mkr", "dash", "etc", "ont", "usdc", "cro", "xem", "bat", "doge", "vet",
 	"zec", "pax", "hedg", "qtum", "dcr", "zrx", "tusd", "hot", "btg", "cennz",
