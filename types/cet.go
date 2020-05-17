@@ -7,7 +7,7 @@ import (
 const (
 	E8 = 100000000
 
-	CET              = "cet"
+	CET              = "dgss"
 	DefaultBondDenom = CET // default bond denomination
 )
 
