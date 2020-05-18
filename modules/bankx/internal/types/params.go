@@ -29,7 +29,7 @@ func NewParams(activation int64, freeTime, lock int64) Params {
 }
 func DefaultParams() Params {
 	return Params{
-		ActivationFee:      100000000,
+		ActivationFee:      0,
 		LockCoinsFreeTime:  604800000000000,
 		LockCoinsFeePerDay: 1e6,
 	}
