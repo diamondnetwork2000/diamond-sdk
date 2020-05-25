@@ -301,7 +301,7 @@ func handleMsgCreateOrder(ctx sdk.Context, msg types.MsgCreateOrder, keeper keep
 func checkMsgCreateOrder(ctx sdk.Context, keeper keepers.Keeper, msg types.MsgCreateOrder, cetFee int64, amount int64, denom string, seq uint64) sdk.Error {
 	if cetFee != 0 {
 		if !keeper.HasCoins(ctx, msg.Sender, sdk.Coins{sdk.NewCoin(dex.CET, sdk.NewInt(cetFee))}) {
-			return types.ErrInsufficientCoins()
+			return types.ErrInsufficientCoins2(cetFee)
 		}
 	}
 	stock, money := SplitSymbol(msg.TradingPair)
@@ -311,7 +311,7 @@ func checkMsgCreateOrder(ctx sdk.Context, keeper keepers.Keeper, msg types.MsgCr
 		totalAmount = totalAmount.AddRaw(cetFee)
 	}
 	if !keeper.HasCoins(ctx, msg.Sender, sdk.Coins{sdk.NewCoin(denom, totalAmount)}) {
-		return types.ErrInsufficientCoins()
+		return types.ErrInsufficientCoins2(totalAmount.Int64())
 	}
 	orderID := types.AssemblyOrderID(msg.Sender.String(), seq, msg.Identify)
 	globalKeeper := keepers.NewGlobalOrderKeeper(keeper.GetMarketKey(), types.ModuleCdc)

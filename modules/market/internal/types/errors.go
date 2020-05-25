@@ -127,6 +127,10 @@ func ErrInsufficientCoins() sdk.Error {
 	return sdk.NewError(CodeSpaceMarket, CodeInsufficientCoin, "Insufficient coin")
 }
 
+func ErrInsufficientCoins2(expected int64) sdk.Error {
+	return sdk.NewError(CodeSpaceMarket, CodeInsufficientCoin, "Insufficient coin, expected (%d)", expected)
+}
+
 func ErrInvalidTradeSide() sdk.Error {
 	return sdk.NewError(CodeSpaceMarket, CodeInvalidTradeSide, "Invalid trade side")
 }
