@@ -11,13 +11,13 @@ import (
 const (
 	DefaultCreateMarketFee             = 1e10 // 100 * 10 ^8
 	DefaultGTEOrderLifetime            = 200000
-	DefaultGTEOrderFeatureFeeByBlocks  = 10
+	DefaultGTEOrderFeatureFeeByBlocks  = 0
 	DefaultMaxExecutedPriceChangeRatio = 25
 	DefaultMarketFeeRatePrecision      = 4
-	DefaultMarketFeeRate               = 10
-	DefaultMarketFeeMin                = 1000000
-	DefaultFeeForZeroDeal              = 1000000
-	DefaultMarketMinExpiredTime        = 7 * 24 * time.Hour
+	DefaultMarketFeeRate               = 0
+	DefaultMarketFeeMin                = 0
+	DefaultFeeForZeroDeal              = 0
+	DefaultMarketMinExpiredTime        = 1 * time.Minute
 )
 
 var (
