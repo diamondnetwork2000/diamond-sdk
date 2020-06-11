@@ -29,6 +29,8 @@ func NewHandler(k keepers.Keeper) sdk.Handler {
 			return handleMsgCancelTradingPair(ctx, msg, k)
 		case types.MsgModifyPricePrecision:
 			return handleMsgModifyPricePrecision(ctx, msg, k)
+		case types.MsgModifyFeeRate:
+			return handleMsgModifyFeeRate(ctx, msg, k)
 		default:
 			return dex.ErrUnknownRequest(ModuleName, msg)
 		}
