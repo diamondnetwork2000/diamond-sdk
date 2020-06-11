@@ -173,8 +173,8 @@ func ModifyFeeRate(cdc *codec.Codec) *cobra.Command {
 
 Example: 
 	cetcli tx market modify-fee-rate --trading-pair=etc/cet \
-	--fee-rate=0.002 --fee-type=1 --from=bob --chain-id=coinexdex \
-	--gas=10000000 --fees=10000cet`,
+	--buy-fee-rate=0.002 --sell-fee-rate=0.002 --from=bob --chain-id=coinexdex \
+	--fees=10000cet`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			msg, err := getMsgModifyFeeRateMsg(cdc)
 			if err != nil {
@@ -184,9 +184,9 @@ Example:
 		},
 	}
 
-	cmd.Flags().String(FlagSymbol, "btc/cet", "The market trading-pair")
-	cmd.Flags().String(BuyFeeRate, "0.002", "The trading-pair")
-	cmd.Flags().String(SellFeeRate, "0.002", "The trading-pair")
+	cmd.Flags().String(FlagSymbol, "dgss/usdt", "The market trading-pair")
+	cmd.Flags().String(BuyFeeRate, "0.002", "Buy fee rate")
+	cmd.Flags().String(SellFeeRate, "0.002", "Sell fee rate")
 	cmd.MarkFlagRequired(FlagSymbol)
 	cmd.MarkFlagRequired(FlagPricePrecision)
 	return cmd
