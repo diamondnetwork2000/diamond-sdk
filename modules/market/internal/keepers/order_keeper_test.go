@@ -56,6 +56,50 @@ func newContextAndMarketKey(chainid string) (sdk.Context, storeKeys) {
 	return ctx, keys
 }
 
+type TestOrder struct {
+	Field1        uint64         `json:"field1"`
+	Field2         uint64         `json:"field2"`
+	Field3         uint64           `json:"field3"`
+}
+
+type TestOrder2 struct {
+	Field1        uint64         `json:"field1"`
+	
+	Field2         uint64         `json:"field2"`
+	Field3         uint64           `json:"field3"`
+	//
+	Field4         sdk.Dec         `json:"field4"`
+}
+
+func TestMarshal(t *testing.T) {
+	
+	order := TestOrder{
+		Field1:1,
+		Field2:2,
+		Field3:1,
+	}
+
+	value := types.ModuleCdc.MustMarshalBinaryBare(order)
+	var order2 TestOrder2
+	types.ModuleCdc.MustUnmarshalBinaryBare(value, &order2)
+
+	if order2.Field4  != (sdk.Dec{}) {
+		t.Errorf("field4: %d",order2.Field4.MulInt(sdk.NewInt(2)))
+	}
+
+	order3 := TestOrder2{
+		Field1:1,
+		Field2:2,
+		Field4: sdk.NewDec(1),
+	}
+	value = types.ModuleCdc.MustMarshalBinaryBare(order3)
+	types.ModuleCdc.MustUnmarshalBinaryBare(value, &order2)
+
+	if order2.Field4  != (sdk.Dec{}) {
+		t.Errorf("field4: %d",order2.Field4)
+	}
+}
+
 func TestOrderCleanUpDayKeeper(t *testing.T) {
 	ctx, keys := newContextAndMarketKey("coinex-chain")
 	k := NewOrderCleanUpDayKeeper(keys.marketKey)

@@ -320,6 +320,7 @@ func (app *TestApp) initKeepers(invCheckPeriod uint) {
 		app.ParamsKeeper.Subspace(market.StoreKey),
 		app.AccountKeeper,
 		app.AccountXKeeper,
+		app.SupplyKeeper,
 	)
 	// register the staking hooks
 	// NOTE: The StakingKeeper above is passed by reference, so that it can be

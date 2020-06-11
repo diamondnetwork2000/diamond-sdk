@@ -269,6 +269,7 @@ func handleMsgCreateOrder(ctx sdk.Context, msg types.MsgCreateOrder, keeper keep
 		Freeze:           amount,
 		DealMoney:        0,
 		DealStock:        0,
+		FeeRate:          sdk.NewDec(2).Quo(sdk.NewDec(1000)),
 	}
 
 	ork := keepers.NewOrderKeeper(keeper.GetMarketKey(), order.TradingPair, types.ModuleCdc)

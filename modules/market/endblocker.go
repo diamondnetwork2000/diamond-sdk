@@ -103,14 +103,18 @@ func (wo *WrappedOrder) Deal(otherSide match.OrderForTrade, amount int64, price 
 	// exchange the coins
 	wo.infoForDeal.bxKeeper.UnFreezeCoins(ctx, seller.Sender, stockCoins)
 	
-	stockfee := buyer.FeeRate.MulInt(sdk.NewInt(amount)).TruncateInt()
-	stockFeeCoins := sdk.Coins{sdk.NewCoin(stock, stockfee)}
-	if stockfee.Int64() > 0 {
-		 //send fee (stockCoins * FeeRate) to fee collector
-		if err := wo.infoForDeal.keeper.SendCoinsFromAccountToModule(ctx, seller.Sender, auth.FeeCollectorName, stockFeeCoins); err != nil {
-			ctx.Logger().Error("%s", err.Error())
+	stockfee := sdk.NewInt(0)
+	if buyer.FeeRate != (sdk.Dec{}) {
+		stockfee = buyer.FeeRate.MulInt(sdk.NewInt(amount)).TruncateInt()
+		stockFeeCoins := sdk.Coins{sdk.NewCoin(stock, stockfee)}
+		if stockfee.Int64() > 0 {
+			 //send fee (stockCoins * FeeRate) to fee collector
+			if err := wo.infoForDeal.keeper.SendCoinsFromAccountToModule(ctx, seller.Sender, auth.FeeCollectorName, stockFeeCoins); err != nil {
+				ctx.Logger().Error("%s", err.Error())
+			}
 		}
 	}
+	
 	actualStockCoins := sdk.Coins{sdk.NewCoin(stock, sdk.NewInt(amount).Sub(stockfee))}
 	//buyer receive (stockCoins - stockfee)
 	wo.infoForDeal.bxKeeper.SendCoins(ctx, seller.Sender, buyer.Sender, actualStockCoins)
@@ -118,14 +122,18 @@ func (wo *WrappedOrder) Deal(otherSide match.OrderForTrade, amount int64, price 
 
 	wo.infoForDeal.bxKeeper.UnFreezeCoins(ctx, buyer.Sender, moneyCoins)
 
-	moneyFee := buyer.FeeRate.MulInt(moneyAmount).TruncateInt()
-	moneyFeeCoins := sdk.Coins{sdk.NewCoin(money, moneyFee)}
-	if moneyFee.Int64() > 0 {
-		 //send fee (stockCoins * FeeRate) to fee collector
-		 if err := wo.infoForDeal.keeper.SendCoinsFromAccountToModule(ctx, buyer.Sender, auth.FeeCollectorName, moneyFeeCoins); err != nil {
-			ctx.Logger().Error("%s", err.Error())
+	moneyFee := sdk.NewInt(0)
+	if seller.FeeRate != (sdk.Dec{}) {
+		moneyFee = seller.FeeRate.MulInt(moneyAmount).TruncateInt()
+		moneyFeeCoins := sdk.Coins{sdk.NewCoin(money, moneyFee)}
+		if moneyFee.Int64() > 0 {
+			 //send fee (stockCoins * FeeRate) to fee collector
+			 if err := wo.infoForDeal.keeper.SendCoinsFromAccountToModule(ctx, buyer.Sender, auth.FeeCollectorName, moneyFeeCoins); err != nil {
+				ctx.Logger().Error("%s", err.Error())
+			}
 		}
 	}
+	
 	actualMoneyCoins := sdk.Coins{sdk.NewCoin(stock, moneyAmount.Sub(moneyFee))}
 	//seller receive (moneyCoins - moneyFee)
 	wo.infoForDeal.bxKeeper.SendCoins(ctx, buyer.Sender, seller.Sender, actualMoneyCoins)
