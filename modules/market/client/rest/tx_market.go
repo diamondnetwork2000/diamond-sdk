@@ -108,6 +108,7 @@ func (req *modifyFeeRate) GetBaseReq() *rest.BaseReq {
 func (req *modifyFeeRate) GetMsg(r *http.Request, sender sdk.AccAddress) (sdk.Msg, error) {
 	msg := types.MsgModifyFeeRate{
 		Sender:         sender,
+		TradingPair: req.TradingPair,
 		BuyFeeRate:    req.BuyFeeRate,
 		SellFeeRate: req.SellFeeRate,
 	}
