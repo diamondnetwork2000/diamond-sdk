@@ -264,6 +264,8 @@ func handleMsgCreateOrder(ctx sdk.Context, msg types.MsgCreateOrder, keeper keep
 		existBlocks = marketParams.GTEOrderLifetime
 	}
 
+	feeRate := sdk.NewDec(2).Quo(sdk.NewDec(1000))
+
 	order := types.Order{
 		Sender:           msg.Sender,
 		Sequence:         seq,
@@ -282,7 +284,7 @@ func handleMsgCreateOrder(ctx sdk.Context, msg types.MsgCreateOrder, keeper keep
 		Freeze:           amount,
 		DealMoney:        0,
 		DealStock:        0,
-		FeeRate:          sdk.NewDec(2).Quo(sdk.NewDec(1000)),
+		FeeRate:          feeRate,
 	}
 
 	ork := keepers.NewOrderKeeper(keeper.GetMarketKey(), order.TradingPair, types.ModuleCdc)
