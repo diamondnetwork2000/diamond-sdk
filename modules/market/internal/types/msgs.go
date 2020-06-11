@@ -323,8 +323,7 @@ type MsgModifyFeeRate struct {
 	Sender         sdk.AccAddress `json:"sender"`
 	TradingPair    string         `json:"trading_pair"`
 	BuyFeeRate sdk.Dec           `json:"buy_fee_rate"`
-	
-	SellFeeRate   sdk.Dec    `json:"sell_fee_type"`
+	SellFeeRate   sdk.Dec    `json:"sell_fee_rate"`
 }
 
 func (msg *MsgModifyFeeRate) SetAccAddress(address sdk.AccAddress) {
