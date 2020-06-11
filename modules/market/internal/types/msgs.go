@@ -336,7 +336,7 @@ func (msg MsgModifyFeeRate) Route() string {
 }
 
 func (msg MsgModifyFeeRate) Type() string {
-	return "modify_trading_pair_price_precision"
+	return "modify_fee_rate"
 }
 
 func (msg MsgModifyFeeRate) ValidateBasic() sdk.Error {

@@ -23,6 +23,7 @@ func GetTxCmd(cdc *codec.Codec) *cobra.Command {
 		CancelOrder(cdc),
 		CancelMarket(cdc),
 		ModifyTradingPairPricePrecision(cdc),
+		ModifyFeeRate(cdc),
 	)...)
 
 	return mktTxCmd
