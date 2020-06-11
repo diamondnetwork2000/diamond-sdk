@@ -14,6 +14,8 @@ type MarketInfo struct {
 	PricePrecision    byte    `json:"price_precision"`
 	LastExecutedPrice sdk.Dec `json:"last_executed_price"`
 	OrderPrecision    byte    `json:"order_precision"`
+	BuyFeeRate    sdk.Dec    `json:"buy_fee_rate"`
+	SellFeeRate    sdk.Dec    `json:"sell_fee_rate"`
 }
 
 func GetGranularityOfOrder(orderPrecision byte) int64 {

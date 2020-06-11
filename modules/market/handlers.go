@@ -44,12 +44,25 @@ func handleMsgCreateTradingPair(ctx sdk.Context, msg types.MsgCreateTradingPair,
 	if msg.OrderPrecision <= types.MaxOrderPrecision {
 		orderPrecision = msg.OrderPrecision
 	}
+
+	buyFeeRate := sdk.NewDec(2).Quo(sdk.NewDec(1000))
+	sellFeeRate := sdk.NewDec(2).Quo(sdk.NewDec(1000))
 	info := types.MarketInfo{
 		Stock:             msg.Stock,
 		Money:             msg.Money,
 		PricePrecision:    msg.PricePrecision,
 		LastExecutedPrice: sdk.ZeroDec(),
 		OrderPrecision:    orderPrecision,
+		BuyFeeRate: buyFeeRate,
+		SellFeeRate: sellFeeRate,
+	}
+
+	if msg.BuyFeeRate != (sdk.Dec{}) {
+		info.BuyFeeRate = msg.BuyFeeRate
+	}
+
+	if msg.SellFeeRate != (sdk.Dec{}) {
+		info.BuyFeeRate = msg.SellFeeRate
 	}
 
 	if err := keeper.SetMarket(ctx, info); err != nil {
@@ -461,6 +474,8 @@ func handleMsgModifyPricePrecision(ctx sdk.Context, msg types.MsgModifyPricePrec
 		Money:             oldInfo.Money,
 		PricePrecision:    msg.PricePrecision,
 		LastExecutedPrice: oldInfo.LastExecutedPrice,
+		BuyFeeRate: oldInfo.BuyFeeRate,
+		SellFeeRate: oldInfo.SellFeeRate,
 	}
 	if err := k.SetMarket(ctx, info); err != nil {
 		return err.Result()
@@ -486,6 +501,67 @@ func handleMsgModifyPricePrecision(ctx sdk.Context, msg types.MsgModifyPricePrec
 }
 
 func checkMsgModifyPricePrecision(ctx sdk.Context, msg types.MsgModifyPricePrecision, k keepers.Keeper) sdk.Error {
+	_, err := k.GetMarketInfo(ctx, msg.TradingPair)
+	if err != nil {
+		return types.ErrInvalidMarket("Error retrieving market information: " + err.Error())
+	}
+
+	stock, _ := SplitSymbol(msg.TradingPair)
+	tokenInfo := k.GetToken(ctx, stock)
+	if !tokenInfo.GetOwner().Equals(msg.Sender) {
+		return types.ErrNotMatchSender(fmt.Sprintf(
+			"The sender of the transaction (%s) does not match the owner of the transaction pair (%s)",
+			tokenInfo.GetOwner().String(), msg.Sender.String()))
+	}
+
+	return nil
+}
+
+func handleMsgModifyFeeRate(ctx sdk.Context, msg types.MsgModifyFeeRate, k keepers.Keeper) sdk.Result {
+	if err := checkMsgModifyFeeRate(ctx, msg, k); err != nil {
+		return err.Result()
+	}
+
+	oldInfo, _ := k.GetMarketInfo(ctx, msg.TradingPair)
+	info := types.MarketInfo{
+		Stock:             oldInfo.Stock,
+		Money:             oldInfo.Money,
+		PricePrecision:    oldInfo.PricePrecision,
+		LastExecutedPrice: oldInfo.LastExecutedPrice,
+		BuyFeeRate: oldInfo.BuyFeeRate,
+		SellFeeRate: oldInfo.SellFeeRate,
+	}
+
+	if msg.FeeType == 1 {
+		info.BuyFeeRate = msg.FeeRate
+	} else {
+		info.SellFeeRate = msg.FeeRate
+	}
+
+	if err := k.SetMarket(ctx, info); err != nil {
+		return err.Result()
+	}
+
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			EventTypeKeyModifyPricePrecision,
+			sdk.NewAttribute(AttributeKeyTradingPair, msg.TradingPair),
+			sdk.NewAttribute(AttributeKeyOldPricePrecision, strconv.Itoa(int(oldInfo.PricePrecision))),
+			sdk.NewAttribute(AttributeKeyNewPricePrecision, strconv.Itoa(int(info.PricePrecision))),
+		),
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, AttributeValueCategory),
+			sdk.NewAttribute(sdk.AttributeKeySender, msg.Sender.String()),
+		),
+	})
+
+	return sdk.Result{
+		Events: ctx.EventManager().Events(),
+	}
+}
+
+func checkMsgModifyFeeRate(ctx sdk.Context, msg types.MsgModifyFeeRate, k keepers.Keeper) sdk.Error {
 	_, err := k.GetMarketInfo(ctx, msg.TradingPair)
 	if err != nil {
 		return types.ErrInvalidMarket("Error retrieving market information: " + err.Error())

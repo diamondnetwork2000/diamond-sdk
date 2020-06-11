@@ -42,6 +42,8 @@ type MsgCreateTradingPair struct {
 	Creator        sdk.AccAddress `json:"creator"`
 	PricePrecision byte           `json:"price_precision"`
 	OrderPrecision byte           `json:"order_precision"`
+	BuyFeeRate     sdk.Dec        `json:"buy_fee_rate"`
+	SellFeeRate    sdk.Dec        `json:"sell_fee_rate"`
 }
 
 func NewMsgCreateTradingPair(stock, money string, creator sdk.AccAddress, pricePrecision byte, orderPrecision byte) MsgCreateTradingPair {
@@ -271,13 +273,21 @@ func (msg MsgCancelTradingPair) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{msg.Sender}
 }
 
-// -------------------------------------------------
-// MsgModifyPricePrecision
-
 type MsgModifyPricePrecision struct {
 	Sender         sdk.AccAddress `json:"sender"`
 	TradingPair    string         `json:"trading_pair"`
 	PricePrecision byte           `json:"price_precision"`
+}
+
+// -------------------------------------------------
+// MsgModifyPricePrecision
+
+type MsgModifyFeeRate struct {
+	Sender         sdk.AccAddress `json:"sender"`
+	TradingPair    string         `json:"trading_pair"`
+	FeeRate sdk.Dec           `json:"fee_rate"`
+	//1: buy 2: sell
+	FeeType   byte    `json:"fee_type"`
 }
 
 func (msg *MsgModifyPricePrecision) SetAccAddress(address sdk.AccAddress) {

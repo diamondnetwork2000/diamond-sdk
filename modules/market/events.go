@@ -9,6 +9,8 @@ var (
 	EventTypeKeyCancelOrder          = "cancel_order"
 	EventTypeKeyCancelTradingPair    = "cancel_market"
 	EventTypeKeyModifyPricePrecision = "modify_price_precision"
+	EventTypeKeyModifyBuyFeeRate = "modify_buy_fee_rate"
+	EventTypeKeyModifySellFeeRate = "modify_sell_fee_rate"
 
 	AttributeKeyTradingPair      = "trading_pair"
 	AttributeKeyOrder            = "order"
