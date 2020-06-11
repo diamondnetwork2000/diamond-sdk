@@ -44,6 +44,7 @@ type (
 	MsgCancelOrder          = types.MsgCancelOrder
 	MsgCancelTradingPair    = types.MsgCancelTradingPair
 	MsgModifyPricePrecision = types.MsgModifyPricePrecision
+	MsgModifyFeeRate        = types.MsgModifyFeeRate
 	CreateOrderInfo         = types.CreateOrderInfo
 	FillOrderInfo           = types.FillOrderInfo
 	CancelOrderInfo         = types.CancelOrderInfo
