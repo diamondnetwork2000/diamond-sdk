@@ -20,6 +20,8 @@ const (
 	FlagOrderPrecision = "order-precision"
 	BuyFeeRate = "buy-fee-rate"
 	SellFeeRate = "sell-fee-rate"
+	FeeRate = "fee-rate"
+	FeeType = "fee-type"
 )
 
 var createMarketFlags = []string{
@@ -38,7 +40,8 @@ Example :
 	cetcli tx market create-trading-pair  \
 	--from bob --chain-id=coinexdex  \
 	--stock=eth --money=cet --order-precision=8 \
-	--price-precision=8 --gas 20000 --fees=1000cet`,
+	--price-precision=8 --gas 20000 --fees=1000cet \
+	--buy-fee-rate=0.002 --sell-fee-rate=0.002`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			msg, err := getCreateMarketMsg()
 			if err != nil {
@@ -161,3 +164,45 @@ func getModifyTradingPairPricePrecisionMsg(cdc *codec.Codec) (*types.MsgModifyPr
 	}
 	return &msg, nil
 }
+
+func ModifyFeeRate(cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "modify-fee-rate",
+		Short: "Modify the fee rate of the trading pair ",
+		Long: `Modify the price precision of the trading pair in the dex.
+
+Example: 
+	cetcli tx market modify-fee-rate --trading-pair=etc/cet \
+	--fee-rate=0.002 --fee-type=1 --from=bob --chain-id=coinexdex \
+	--gas=10000000 --fees=10000cet`,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			msg, err := getMsgModifyFeeRateMsg(cdc)
+			if err != nil {
+				return err
+			}
+			return cliutil.CliRunCommand(cdc, msg)
+		},
+	}
+
+	cmd.Flags().String(FlagSymbol, "btc/cet", "The market trading-pair")
+	cmd.Flags().String(BuyFeeRate, "0.002", "The trading-pair")
+	cmd.Flags().String(SellFeeRate, "0.002", "The trading-pair")
+	cmd.MarkFlagRequired(FlagSymbol)
+	cmd.MarkFlagRequired(FlagPricePrecision)
+	return cmd
+}
+
+func getMsgModifyFeeRateMsg(cdc *codec.Codec) (*types.MsgModifyFeeRate, error) {
+	
+	buyFeeRate,_ := sdk.NewDecFromStr(viper.GetString(BuyFeeRate))
+	sellFeeRate,_ := sdk.NewDecFromStr(viper.GetString(SellFeeRate))
+
+	msg := types.MsgModifyFeeRate{
+		TradingPair:    viper.GetString(FlagSymbol),
+		BuyFeeRate: buyFeeRate,
+		SellFeeRate: sellFeeRate,
+	}
+	return &msg, nil
+}
+
+

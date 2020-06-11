@@ -284,13 +284,7 @@ type MsgModifyPricePrecision struct {
 // -------------------------------------------------
 // MsgModifyPricePrecision
 
-type MsgModifyFeeRate struct {
-	Sender         sdk.AccAddress `json:"sender"`
-	TradingPair    string         `json:"trading_pair"`
-	FeeRate sdk.Dec           `json:"fee_rate"`
-	//1: buy 2: sell
-	FeeType   byte    `json:"fee_type"`
-}
+
 
 func (msg *MsgModifyPricePrecision) SetAccAddress(address sdk.AccAddress) {
 	msg.Sender = address
@@ -322,5 +316,44 @@ func (msg MsgModifyPricePrecision) GetSignBytes() []byte {
 }
 
 func (msg MsgModifyPricePrecision) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{msg.Sender}
+}
+
+type MsgModifyFeeRate struct {
+	Sender         sdk.AccAddress `json:"sender"`
+	TradingPair    string         `json:"trading_pair"`
+	BuyFeeRate sdk.Dec           `json:"buy_fee_rate"`
+	
+	SellFeeRate   sdk.Dec    `json:"sell_fee_type"`
+}
+
+func (msg *MsgModifyFeeRate) SetAccAddress(address sdk.AccAddress) {
+	msg.Sender = address
+}
+
+func (msg MsgModifyFeeRate) Route() string {
+	return RouterKey
+}
+
+func (msg MsgModifyFeeRate) Type() string {
+	return "modify_trading_pair_price_precision"
+}
+
+func (msg MsgModifyFeeRate) ValidateBasic() sdk.Error {
+	if err := sdk.VerifyAddressFormat(msg.Sender); err != nil {
+		return ErrInvalidAddress()
+	}
+	if !IsValidTradingPair(strings.Split(msg.TradingPair, SymbolSeparator)) {
+		return ErrInvalidSymbol()
+	}
+	
+	return nil
+}
+
+func (msg MsgModifyFeeRate) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(msg))
+}
+
+func (msg MsgModifyFeeRate) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{msg.Sender}
 }

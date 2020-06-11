@@ -528,15 +528,11 @@ func handleMsgModifyFeeRate(ctx sdk.Context, msg types.MsgModifyFeeRate, k keepe
 		Money:             oldInfo.Money,
 		PricePrecision:    oldInfo.PricePrecision,
 		LastExecutedPrice: oldInfo.LastExecutedPrice,
-		BuyFeeRate: oldInfo.BuyFeeRate,
-		SellFeeRate: oldInfo.SellFeeRate,
+		BuyFeeRate: msg.BuyFeeRate,
+		SellFeeRate: msg.SellFeeRate,
 	}
 
-	if msg.FeeType == 1 {
-		info.BuyFeeRate = msg.FeeRate
-	} else {
-		info.SellFeeRate = msg.FeeRate
-	}
+	
 
 	if err := k.SetMarket(ctx, info); err != nil {
 		return err.Result()

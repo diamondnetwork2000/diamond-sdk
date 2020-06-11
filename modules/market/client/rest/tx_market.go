@@ -91,3 +91,30 @@ func modifyTradingPairPricePrecision(cdc *codec.Codec, cliCtx context.CLIContext
 	var req modifyPricePrecision
 	return restutil.NewRestHandler(cdc, cliCtx, &req)
 }
+
+type modifyFeeRate struct {
+	BaseReq        rest.BaseReq `json:"base_req"`
+	TradingPair    string       `json:"trading_pair"`
+	BuyFeeRate sdk.Dec          `json:"buy_fee_rate"`
+	SellFeeRate sdk.Dec          `json:"sell_fee_rate"`
+}
+
+func (req *modifyFeeRate) New() restutil.RestReq {
+	return new(modifyFeeRate)
+}
+func (req *modifyFeeRate) GetBaseReq() *rest.BaseReq {
+	return &req.BaseReq
+}
+func (req *modifyFeeRate) GetMsg(r *http.Request, sender sdk.AccAddress) (sdk.Msg, error) {
+	msg := types.MsgModifyFeeRate{
+		Sender:         sender,
+		BuyFeeRate:    req.BuyFeeRate,
+		SellFeeRate: req.SellFeeRate,
+	}
+	return msg, nil
+}
+
+func modifyFeeRateFn(cdc *codec.Codec, cliCtx context.CLIContext) http.HandlerFunc {
+	var req modifyFeeRate
+	return restutil.NewRestHandler(cdc, cliCtx, &req)
+}
