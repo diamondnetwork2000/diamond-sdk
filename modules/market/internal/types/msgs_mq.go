@@ -36,6 +36,7 @@ type CreateOrderInfo struct {
 	FrozenCommission int64   `json:"frozen_commission"`
 	FrozenFeatureFee int64   `json:"frozen_feature_fee"`
 	Freeze           int64   `json:"freeze"`
+	FeeRate          sdk.Dec  `json:"fee_rate"`
 }
 
 type FillOrderInfo struct {
@@ -53,6 +54,12 @@ type FillOrderInfo struct {
 	CurrStock int64   `json:"curr_stock"`
 	CurrMoney int64   `json:"curr_money"`
 	FillPrice sdk.Dec `json:"fill_price"`
+	//how much stock is transfered to platform in this deal
+	CurrStockFee int64 `json:"curr_stock_fee"`
+	CurrMoneyFee int64 `json:"curr_money_fee"`
+	//how much stock is transfered to platform until this deal
+	DealStockFee int64   `json:"deal_stock_fee"`
+	DealMoneyFee int64   `json:"deal_money_fee"`
 }
 
 type CancelOrderInfo struct {

@@ -6,6 +6,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/params"
 
@@ -31,12 +32,14 @@ type Keeper struct {
 	msgProducer   msgqueue.MsgSender
 	ak            auth.AccountKeeper
 	authX         types.ExpectedAuthXKeeper
+	supplyKeeper     authtypes.SupplyKeeper
 }
 
 func NewKeeper(key sdk.StoreKey, axkVal types.ExpectedAssetStatusKeeper,
 	bnkVal types.ExpectedBankxKeeper, cdcVal *codec.Codec,
 	msgKeeperVal msgqueue.MsgSender, paramstore params.Subspace,
-	ak auth.AccountKeeper, authX types.ExpectedAuthXKeeper) Keeper {
+	ak auth.AccountKeeper, authX types.ExpectedAuthXKeeper,
+	supplyKeeper     authtypes.SupplyKeeper) Keeper {
 
 	return Keeper{
 		paramSubspace: paramstore.WithKeyTable(types.ParamKeyTable()),
@@ -49,6 +52,7 @@ func NewKeeper(key sdk.StoreKey, axkVal types.ExpectedAssetStatusKeeper,
 		msgProducer:   msgKeeperVal,
 		ak:            ak,
 		authX:         authX,
+		supplyKeeper: supplyKeeper,
 	}
 }
 
@@ -367,4 +371,8 @@ func marketStoreKey(prefix []byte, params ...string) []byte {
 		}
 	}
 	return buf.Bytes()
+}
+
+func (k Keeper) SendCoinsFromAccountToModule(ctx sdk.Context, senderAddr sdk.AccAddress, recipientModule string, amt sdk.Coins) sdk.Error {
+	return k.supplyKeeper.SendCoinsFromAccountToModule(ctx, senderAddr, recipientModule, amt)
 }

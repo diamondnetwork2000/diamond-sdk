@@ -15,6 +15,7 @@ type Order struct {
 	TradingPair      string         `json:"trading_pair"`
 	OrderType        byte           `json:"order_type"`
 	Price            sdk.Dec        `json:"price"`
+	FeeRate            sdk.Dec        `json:"fee_rate"`
 	Quantity         int64          `json:"quantity"`
 	Side             byte           `json:"side"`
 	TimeInForce      int64          `json:"time_in_force"`

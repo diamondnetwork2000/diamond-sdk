@@ -6,11 +6,13 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/auth"
 
 	"github.com/coinexchain/cet-sdk/modules/market/internal/keepers"
 	"github.com/coinexchain/cet-sdk/modules/market/internal/types"
 	"github.com/coinexchain/cet-sdk/modules/market/match"
 	"github.com/coinexchain/cet-sdk/msgqueue"
+
 	dex "github.com/coinexchain/cet-sdk/types"
 )
 
@@ -22,6 +24,7 @@ type InfoForDeal struct {
 	changedOrders map[string]*types.Order
 	lastPrice     sdk.Dec
 	context       sdk.Context
+	keeper keepers.Keeper
 }
 
 // returns true when a buyer's frozen money is not enough to buy LeftStock.
@@ -99,9 +102,33 @@ func (wo *WrappedOrder) Deal(otherSide match.OrderForTrade, amount int64, price 
 	ctx := wo.infoForDeal.context
 	// exchange the coins
 	wo.infoForDeal.bxKeeper.UnFreezeCoins(ctx, seller.Sender, stockCoins)
-	wo.infoForDeal.bxKeeper.SendCoins(ctx, seller.Sender, buyer.Sender, stockCoins)
+	
+	stockfee := buyer.FeeRate.MulInt(sdk.NewInt(amount)).TruncateInt()
+	stockFeeCoins := sdk.Coins{sdk.NewCoin(stock, stockfee)}
+	if stockfee.Int64() > 0 {
+		 //send fee (stockCoins * FeeRate) to fee collector
+		if err := wo.infoForDeal.keeper.SendCoinsFromAccountToModule(ctx, seller.Sender, auth.FeeCollectorName, stockFeeCoins); err != nil {
+			ctx.Logger().Error("%s", err.Error())
+		}
+	}
+	actualStockCoins := sdk.Coins{sdk.NewCoin(stock, sdk.NewInt(amount).Sub(stockfee))}
+	//buyer receive (stockCoins - stockfee)
+	wo.infoForDeal.bxKeeper.SendCoins(ctx, seller.Sender, buyer.Sender, actualStockCoins)
+	
+
 	wo.infoForDeal.bxKeeper.UnFreezeCoins(ctx, buyer.Sender, moneyCoins)
-	wo.infoForDeal.bxKeeper.SendCoins(ctx, buyer.Sender, seller.Sender, moneyCoins)
+
+	moneyFee := buyer.FeeRate.MulInt(moneyAmount).TruncateInt()
+	moneyFeeCoins := sdk.Coins{sdk.NewCoin(money, moneyFee)}
+	if moneyFee.Int64() > 0 {
+		 //send fee (stockCoins * FeeRate) to fee collector
+		 if err := wo.infoForDeal.keeper.SendCoinsFromAccountToModule(ctx, buyer.Sender, auth.FeeCollectorName, moneyFeeCoins); err != nil {
+			ctx.Logger().Error("%s", err.Error())
+		}
+	}
+	actualMoneyCoins := sdk.Coins{sdk.NewCoin(stock, moneyAmount.Sub(moneyFee))}
+	//seller receive (moneyCoins - moneyFee)
+	wo.infoForDeal.bxKeeper.SendCoins(ctx, buyer.Sender, seller.Sender, actualMoneyCoins)
 
 	// record the changed orders for further processing
 	wo.infoForDeal.changedOrders[buyer.OrderID()] = buyer
@@ -251,6 +278,7 @@ func runMatch(ctx sdk.Context, midPrice sdk.Dec, ratio int64, symbol string, kee
 		context:       ctx,
 		lastPrice:     sdk.NewDec(0),
 		msgSender:     keeper.GetMsgProducer(),
+		keeper: keeper,
 	}
 
 	// from the order book, we fetch the candidate orders for matching and filter them
