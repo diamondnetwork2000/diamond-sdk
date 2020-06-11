@@ -46,13 +46,15 @@ type MsgCreateTradingPair struct {
 	SellFeeRate    sdk.Dec        `json:"sell_fee_rate"`
 }
 
-func NewMsgCreateTradingPair(stock, money string, creator sdk.AccAddress, pricePrecision byte, orderPrecision byte) MsgCreateTradingPair {
+func NewMsgCreateTradingPair(stock, money string, creator sdk.AccAddress, pricePrecision byte, orderPrecision byte,buyFeeRate     sdk.Dec,sellFeeRate     sdk.Dec) MsgCreateTradingPair {
 	return MsgCreateTradingPair{
 		Stock:          stock,
 		Money:          money,
 		Creator:        creator,
 		PricePrecision: pricePrecision,
 		OrderPrecision: orderPrecision,
+		BuyFeeRate : buyFeeRate,
+		SellFeeRate: sellFeeRate,
 	}
 }
 

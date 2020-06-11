@@ -90,7 +90,7 @@ func TestMarshal(t *testing.T) {
 	order3 := TestOrder2{
 		Field1:1,
 		Field2:2,
-		Field4: sdk.NewDec(1),
+		Field4: sdk.NewDec(1).Quo(sdk.NewDec(1000)),
 	}
 	value = types.ModuleCdc.MustMarshalBinaryBare(order3)
 	types.ModuleCdc.MustUnmarshalBinaryBare(value, &order2)
