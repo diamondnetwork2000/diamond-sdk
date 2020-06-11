@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/cosmos/cosmos-sdk/codec"
-
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/coinexchain/cet-sdk/modules/market/internal/types"
 	"github.com/coinexchain/cosmos-utils/client/cliutil"
 )
@@ -18,6 +18,8 @@ const (
 	FlagMoney          = "money"
 	FlagPricePrecision = "price-precision"
 	FlagOrderPrecision = "order-precision"
+	BuyFeeRate = "buy-fee-rate"
+	SellFeeRate = "sell-fee-rate"
 )
 
 var createMarketFlags = []string{
@@ -52,6 +54,8 @@ Example :
 		" control the price accuracy of the order when token trades")
 	cmd.Flags().Int(FlagOrderPrecision, 0, "To control the granularity of token trade, "+
 		"the token amount of trade must be a multiple of granularity.")
+	cmd.Flags().String(BuyFeeRate, "0.002", "Buy Fee Rate")
+	cmd.Flags().String(SellFeeRate, "0.002", "Sell Fee Rate")
 	for _, flag := range createMarketFlags {
 		cmd.MarkFlagRequired(flag)
 	}
@@ -75,11 +79,16 @@ func parseCreateMarketFlags() (*types.MsgCreateTradingPair, error) {
 		}
 	}
 
+	buyFeeRate,_ := sdk.NewDecFromStr(viper.GetString(BuyFeeRate))
+	sellFeeRate,_ := sdk.NewDecFromStr(viper.GetString(SellFeeRate))
+
 	msg := &types.MsgCreateTradingPair{
 		Stock:          viper.GetString(FlagStock),
 		Money:          viper.GetString(FlagMoney),
 		PricePrecision: byte(viper.GetInt(FlagPricePrecision)),
 		OrderPrecision: byte(viper.GetInt(FlagOrderPrecision)),
+		BuyFeeRate: buyFeeRate,
+		SellFeeRate: sellFeeRate,
 	}
 	return msg, nil
 }
