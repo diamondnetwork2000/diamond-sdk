@@ -214,6 +214,7 @@ func sendCreateOrderMsg(ctx sdk.Context, keeper keepers.Keeper, order types.Orde
 			FrozenCommission: order.FrozenCommission,
 			FrozenFeatureFee: order.FrozenFeatureFee,
 			Freeze:           order.Freeze,
+			FeeRate:          order.FeeRate,
 		}
 		msgqueue.FillMsgs(ctx, types.CreateOrderInfoKey, createOrderInfo)
 	}

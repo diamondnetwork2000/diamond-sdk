@@ -146,11 +146,11 @@ func (wo *WrappedOrder) Deal(otherSide match.OrderForTrade, amount int64, price 
 	wo.infoForDeal.lastPrice = price
 
 	if wo.infoForDeal.msgSender.IsSubscribed(types.Topic) {
-		SendFillMsg(ctx, seller, buyer, amount, moneyAmountInt64, price, ctx.BlockHeight())
+		SendFillMsg(ctx, seller, buyer, amount, moneyAmountInt64, price, ctx.BlockHeight(),stockfee.Int64(), moneyFee.Int64())
 	}
 }
 
-func SendFillMsg(ctx sdk.Context, seller *Order, buyer *Order, stockAmount, moneyAmount int64, price sdk.Dec, currentHeight int64) {
+func SendFillMsg(ctx sdk.Context, seller *Order, buyer *Order, stockAmount, moneyAmount int64, price sdk.Dec, currentHeight int64, stockFee, moneyFee int64) {
 	sellInfo := types.FillOrderInfo{
 		OrderID:     seller.OrderID(),
 		Height:      currentHeight,
@@ -164,6 +164,8 @@ func SendFillMsg(ctx sdk.Context, seller *Order, buyer *Order, stockAmount, mone
 		CurrStock:   stockAmount,
 		CurrMoney:   moneyAmount,
 		Price:       seller.Price,
+		CurrStockFee: stockFee,
+		CurrMoneyFee: moneyFee,
 	}
 	msgqueue.FillMsgs(ctx, types.FillOrderInfoKey, sellInfo)
 
@@ -180,6 +182,8 @@ func SendFillMsg(ctx sdk.Context, seller *Order, buyer *Order, stockAmount, mone
 		CurrStock:   stockAmount,
 		CurrMoney:   moneyAmount,
 		Price:       buyer.Price,
+		CurrStockFee: stockFee,
+		CurrMoneyFee: moneyFee,
 	}
 	msgqueue.FillMsgs(ctx, types.FillOrderInfoKey, buyInfo)
 }
