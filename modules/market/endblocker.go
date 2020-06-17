@@ -134,7 +134,7 @@ func (wo *WrappedOrder) Deal(otherSide match.OrderForTrade, amount int64, price 
 		}
 	}
 	
-	actualMoneyCoins := sdk.Coins{sdk.NewCoin(stock, moneyAmount.Sub(moneyFee))}
+	actualMoneyCoins := sdk.Coins{sdk.NewCoin(money, moneyAmount.Sub(moneyFee))}
 	//seller receive (moneyCoins - moneyFee)
 	wo.infoForDeal.bxKeeper.SendCoins(ctx, buyer.Sender, seller.Sender, actualMoneyCoins)
 
