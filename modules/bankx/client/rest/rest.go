@@ -13,6 +13,6 @@ func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec) 
 	r.HandleFunc("/bank/accounts/{address}/supervised_transfers", sendSupervisedTxRequestHandlerFn(cliCtx.Codec, cliCtx)).Methods("POST")
 	r.HandleFunc("/bank/accounts/memo", sendRequestHandlerFn(cliCtx.Codec, cliCtx)).Methods("POST")
 	r.HandleFunc("/bank/balances/{address}", QueryBalancesRequestHandlerFn(cliCtx, cdc)).Methods("GET")
-	r.HandleFunc("/bank/balances", QueryAllBalancesRequestHandlerFn(cliCtx, cdc)).Methods("GET")
+	r.HandleFunc("/bank/all_balances", QueryAllBalancesRequestHandlerFn(cliCtx, cdc)).Methods("GET")
 	r.HandleFunc("/bank/parameters", queryParamsHandlerFn(cliCtx)).Methods("GET")
 }
