@@ -5,6 +5,7 @@ import (
 
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/x/auth"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/coinexchain/cet-sdk/modules/authx"
@@ -86,18 +87,22 @@ func queryAllBalances(ctx sdk.Context, k Keeper, req abci.RequestQuery) ([]byte,
 	
 	all := []AllBalance{}
 
-	axkProcess := func(acc authx.AccountX) bool {
-		addr := acc.Address
+	akProcess := func(acc auth.Account) bool {
+		addr := acc.GetAddress()
 		balance := AllBalance{addr,sdk.Coins{}, authx.LockedCoins{}, sdk.Coins{}}
 		balance.C = k.bk.GetCoins(ctx, addr)
-		balance.L = acc.GetAllLockedCoins()
-		balance.F = acc.FrozenCoins
+
+		if aux, ok := k.axk.GetAccountX(ctx, addr); ok {
+			balance.L = aux.GetAllLockedCoins()
+		    balance.F = aux.FrozenCoins
+		}
+	
 		all = append(all, balance)
 		return false
 	}
 
-	k.axk.IterateAccounts(ctx, axkProcess)
-	//k.ak.IterateAccounts(ctx, akProcess)
+	//k.axk.IterateAccounts(ctx, axkProcess)
+	k.ak.IterateAccounts(ctx, akProcess)
 
 	bz, err := codec.MarshalJSONIndent(types.ModuleCdc, all)
 	if err != nil {
