@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	abci "github.com/tendermint/tendermint/abci/types"
-
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -15,7 +14,15 @@ import (
 const (
 	QueryParameters = "parameters"
 	QueryBalances   = "balances"
+	QueryAllBalances   = "allbalances"
 )
+
+type AllBalance struct {
+	A sdk.AccAddress    `json:"addr"`
+	C sdk.Coins         `json:"coins"`
+	L authx.LockedCoins `json:"locked_coins"`
+	F sdk.Coins         `json:"frozen_coins"`
+}
 
 // creates a querier for asset REST endpoints
 func NewQuerier(keeper Keeper) sdk.Querier {
@@ -25,6 +32,8 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 			return queryParameters(ctx, keeper)
 		case QueryBalances:
 			return queryBalances(ctx, keeper, req)
+		case QueryAllBalances:
+			return queryAllBalances(ctx, keeper, req)
 		default:
 			return nil, sdk.ErrUnknownRequest("query symbol : " + path[0])
 		}
@@ -64,6 +73,31 @@ func queryBalances(ctx sdk.Context, k Keeper, req abci.RequestQuery) ([]byte, sd
 		all.L = aux.GetAllLockedCoins()
 		all.F = aux.FrozenCoins
 	}
+
+	bz, err := codec.MarshalJSONIndent(types.ModuleCdc, all)
+	if err != nil {
+		return nil, sdk.ErrInternal(sdk.AppendMsgToErr("could not marshal result to JSON", err.Error()))
+	}
+
+	return bz, nil
+}
+
+func queryAllBalances(ctx sdk.Context, k Keeper, req abci.RequestQuery) ([]byte, sdk.Error) {
+	
+	all := []AllBalance{}
+
+	axkProcess := func(acc authx.AccountX) bool {
+		addr := acc.Address
+		balance := AllBalance{addr,sdk.Coins{}, authx.LockedCoins{}, sdk.Coins{}}
+		balance.C = k.bk.GetCoins(ctx, addr)
+		balance.L = acc.GetAllLockedCoins()
+		balance.F = acc.FrozenCoins
+		all = append(all, balance)
+		return false
+	}
+
+	k.axk.IterateAccounts(ctx, axkProcess)
+	//k.ak.IterateAccounts(ctx, akProcess)
 
 	bz, err := codec.MarshalJSONIndent(types.ModuleCdc, all)
 	if err != nil {
