@@ -42,7 +42,7 @@ func QueryBalancesRequestHandlerFn(cliCtx context.CLIContext, cdc *codec.Codec) 
 func QueryAllBalancesRequestHandlerFn(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		route := fmt.Sprintf("custom/%s/%s", types.StoreKey, keeper.QueryAllBalances)
-		vars := mux.Vars(r)
+		
 
 		restutil.RestQuery(cdc, cliCtx, w, r, route, nil, nil)
 	}
