@@ -89,15 +89,19 @@ func queryAllBalances(ctx sdk.Context, k Keeper, req abci.RequestQuery) ([]byte,
 
 	akProcess := func(acc auth.Account) bool {
 		addr := acc.GetAddress()
-		balance := AllBalance{addr,sdk.Coins{}, authx.LockedCoins{}, sdk.Coins{}}
-		balance.C = k.bk.GetCoins(ctx, addr)
 
-		if aux, ok := k.axk.GetAccountX(ctx, addr); ok {
-			balance.L = aux.GetAllLockedCoins()
-		    balance.F = aux.FrozenCoins
-		}
+		if !k.BlacklistedAddr(addr) {
+			balance := AllBalance{addr,sdk.Coins{}, authx.LockedCoins{}, sdk.Coins{}}
+			balance.C = k.bk.GetCoins(ctx, addr)
 	
-		all = append(all, balance)
+			if aux, ok := k.axk.GetAccountX(ctx, addr); ok {
+				balance.L = aux.GetAllLockedCoins()
+				balance.F = aux.FrozenCoins
+			}
+		
+			all = append(all, balance)
+		}
+		
 		return false
 	}
 
