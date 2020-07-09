@@ -20,7 +20,7 @@ const (
 
 type AllBalance struct {
 	A sdk.AccAddress    `json:"addr"`
-	R bool              `json:reserved_account`
+	R bool              `json:"reserved_account"`
 	C sdk.Coins         `json:"coins"`
 	L authx.LockedCoins `json:"locked_coins"`
 	F sdk.Coins         `json:"frozen_coins"`
