@@ -20,6 +20,7 @@ const (
 
 type AllBalance struct {
 	A sdk.AccAddress    `json:"addr"`
+	R bool              `json:reserved_account`
 	C sdk.Coins         `json:"coins"`
 	L authx.LockedCoins `json:"locked_coins"`
 	F sdk.Coins         `json:"frozen_coins"`
@@ -90,17 +91,20 @@ func queryAllBalances(ctx sdk.Context, k Keeper, req abci.RequestQuery) ([]byte,
 	akProcess := func(acc auth.Account) bool {
 		addr := acc.GetAddress()
 
-		if !k.BlacklistedAddr(addr) {
-			balance := AllBalance{addr,sdk.Coins{}, authx.LockedCoins{}, sdk.Coins{}}
-			balance.C = k.bk.GetCoins(ctx, addr)
-	
-			if aux, ok := k.axk.GetAccountX(ctx, addr); ok {
-				balance.L = aux.GetAllLockedCoins()
-				balance.F = aux.FrozenCoins
-			}
-		
-			all = append(all, balance)
+		reservedAccount := false
+		if k.BlacklistedAddr(addr) {
+			reservedAccount = true
 		}
+
+		balance := AllBalance{addr, reservedAccount, sdk.Coins{}, authx.LockedCoins{}, sdk.Coins{}}
+		balance.C = k.bk.GetCoins(ctx, addr)
+	
+		if aux, ok := k.axk.GetAccountX(ctx, addr); ok {
+			balance.L = aux.GetAllLockedCoins()
+			balance.F = aux.FrozenCoins
+		}
+		
+		all = append(all, balance)
 		
 		return false
 	}
